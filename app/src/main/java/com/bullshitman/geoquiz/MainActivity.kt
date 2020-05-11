@@ -40,7 +40,6 @@ class MainActivity : AppCompatActivity() {
         }
         updateQuestion()
     }
-
     private fun updateQuestion() {
         val questionTextResId = questonBank[currentIndex].textResID
         questionTextView.setText(questionTextResId)
