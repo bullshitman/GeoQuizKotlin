@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
         Question(R.string.question_americas, true),
         Question(R.string.question_asia, true))
     private var currentIndex = 0
+    private var countAnswers = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate(Bundle?) called")
@@ -73,14 +74,25 @@ class MainActivity : AppCompatActivity() {
     private fun updateQuestion() {
         val questionTextResId = questonBank[currentIndex].textResID
         questionTextView.setText(questionTextResId)
+        setClickable(true)
     }
+
+    private fun setClickable(option: Boolean) {
+        trueButton.isClickable = option
+        falseButton.isClickable = option
+    }
+
     private fun checkAnswer(userAnswer: Boolean) {
+        setClickable(false)
         val correctAnswer = questonBank[currentIndex].answer
         val messageResId = if (userAnswer == correctAnswer) {
-            R.string.correct_toast
+            R.string.correct_toast.also { countAnswers ++ }
         } else {
             R.string.incorrect_toast
         }
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
+        if (currentIndex == questonBank.size - 1) {
+            Toast.makeText(this, "${(countAnswers.toDouble() / questonBank.size.toDouble() * 100).toInt()}% right answers.", Toast.LENGTH_LONG).show()
+        }
     }
 }
