@@ -10,6 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 
 
 private const val TAG = "MainActivity"
@@ -23,7 +24,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nextButton: Button
     private lateinit var questionTextView: TextView
     private lateinit var cheatButton: Button
-    private val quizViewModel: QuizViewModel by viewModels()
+    private val quizViewModel: QuizViewModel by lazy {
+        ViewModelProvider(this@MainActivity).get(QuizViewModel::class.java)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate(Bundle?) called")
@@ -46,6 +49,7 @@ class MainActivity : AppCompatActivity() {
         nextButton.setOnClickListener {
             quizViewModel.moveToNext()
             updateQuestion()
+            quizViewModel.isCheater = false
         }
 
         cheatButton.setOnClickListener{
@@ -53,6 +57,7 @@ class MainActivity : AppCompatActivity() {
             val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
             startActivityForResult(intent, REQUEST_CODE_CHEAT)
         }
+
 
         updateQuestion()
     }
@@ -76,11 +81,13 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume() called")
+        Log.v(TAG, "Cheater status: ${quizViewModel.isCheater}")
     }
 
     override fun onPause() {
         super.onPause()
         Log.d(TAG, "onPause() called")
+
     }
 
     override fun onStop() {
@@ -99,7 +106,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateQuestion() {
-//        Log.d(TAG, "Updating question text", Exception())
         val questionTextResId = quizViewModel.currentQuestionText
         questionTextView.setText(questionTextResId)
     }
@@ -108,7 +114,8 @@ class MainActivity : AppCompatActivity() {
         val messageResId = when {
             quizViewModel.isCheater -> R.string.judgment_toast
             userAnswer == correctAnswer -> R.string.correct_toast
-            else -> R.string.incorrect_toast        }
+            else -> R.string.incorrect_toast
+        }
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
             .show()
 
