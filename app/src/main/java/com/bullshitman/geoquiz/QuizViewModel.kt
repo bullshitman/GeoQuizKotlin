@@ -16,6 +16,7 @@ class QuizViewModel(private var currentQuestionIndex: Int = 0) : ViewModel() {
         Question(R.string.question_americas, true),
         Question(R.string.question_asia, true))
     var currentIndex = 0
+    var cheatCounter = 0
     var isCheater = false
     val currentQuestionAnswer: Boolean
         get() = questonBank[currentIndex].answer
